@@ -60,7 +60,12 @@ function special_menu_items_menu_link(array $variables) {
       case '<nolink>':
         $tag = variable_get('special_menu_items_nolink_tag', '<span>');
         $title = strip_tags(l($element['#title'], $element['#href'], $element['#localized_options']));
-        $output = special_menu_items_render_menu_item($tag, $title);
+        $css = NULL;
+        // Set a class if the link is in the active trail.
+        if (!empty($element['#original_link']['in_active_trail'])) {
+          $css = 'active-trail';
+        }
+        $output = special_menu_items_render_menu_item($tag, $title, $css);
         $element['#attributes']['class'][] = 'nolink';
         break;
         
