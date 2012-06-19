@@ -178,16 +178,18 @@ function special_menu_items_theme_registry_alter(&$registry) {
  * Description changed, added nolink and separator as path types.
  */
 function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
-  $default_value = $form['link_path']['#default_value'];
+  if ($form['link_path']['#type'] == 'textfield') {
+    $default_value = $form['link_path']['#default_value'];
 
-  if (preg_match('/^<nolink>\/[0-9]+$/', $default_value)) {
-    $default_value = '<nolink>';
-  } elseif (preg_match('/^<separator>\/[0-9]+$/', $default_value)) {
-    $default_value = '<separator>';
+    if (preg_match('/^<nolink>\/[0-9]+$/', $default_value)) {
+      $default_value = '<nolink>';
+    } elseif (preg_match('/^<separator>\/[0-9]+$/', $default_value)) {
+      $default_value = '<separator>';
+    }
+
+    $form['link_path']['#default_value'] = $default_value;
+    $form['link_path']['#description'] .=  ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
   }
-
-  $form['link_path']['#default_value'] = $default_value;
-  $form['link_path']['#description'] .=  ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
 }
 
 /**
