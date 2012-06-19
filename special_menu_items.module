@@ -48,9 +48,9 @@ function special_menu_items_menu() {
 
 function special_menu_items_link(array $variables) {
   if (in_array($variables['path'], array('<nolink>', '<separator>'))) {
-    return '<span' . drupal_attributes($variables['options']['attributes']) . '>'
-         . ($variables['options']['html'] ? $variables['text'] : check_plain($variables['text']))
-         . '</span>';
+    $tag = variable_get('special_menu_items_nolink_tag', '<span>');
+    $value = $variables['options']['html'] ? $variables['text'] : check_plain($variables['text']);
+    return special_menu_items_render_menu_item($tag, $value, $variables['options']['attributes']);
   }
   // Call the original theme function for normal menu link.
   return theme('link_default',$variables);
@@ -76,12 +76,12 @@ function special_menu_items_menu_link(array $variables) {
       case '<nolink>':
         $tag = variable_get('special_menu_items_nolink_tag', '<span>');
         $title = strip_tags(l($element['#title'], $element['#href'], $element['#localized_options']));
-        $css = NULL;
+        $attrs = $element['#original_link']['options']['attributes'] ?: array();
         // Set a class if the link is in the active trail.
         if (!empty($element['#original_link']['in_active_trail'])) {
-          $css = 'active-trail';
+          $attrs['class'][] = 'active-trail';
         }
-        $output = special_menu_items_render_menu_item($tag, $title, $css);
+        $output = special_menu_items_render_menu_item($tag, $title, $attrs);
         $element['#attributes']['class'][] = 'nolink';
         break;
 
@@ -102,26 +102,13 @@ function special_menu_items_menu_link(array $variables) {
 /**
  * Returns menu item rendered.
  */
-function special_menu_items_render_menu_item($tag, $value, $css = NULL) {
+function special_menu_items_render_menu_item($tag, $value, $attrs = array()) {
   $length = strlen($tag);
-
-  //Validate the tags
   if ($tag[0] == '<' && $tag[$length - 1] == '>') {
-    $closingtag = str_replace('<', '</', $tag);
-    if ($css) {
-      $tag = str_replace('>', ' class="' . $css . '">', $tag);
-    }
-  } else {
-    if ($css) {
-      $classtag = '<' . $tag . ' class="' . $css . '">';
-      $tag = '<' . $tag . '>';
-      $closingtag = str_replace('<', '</', $tag);
-      $tag = $classtag;
-    } else {
-      $tag = '<' . $tag . '>';
-      $closingtag = str_replace('<', '</', $tag);
-    }
+    $tag = substr($tag, 1, $length-2);
   }
+  $closingtag = preg_replace('#^(\w).*$#', '</$1>', $tag);
+  $tag = '<' . $tag . drupal_attributes($attrs) . '>';
 
   return $tag . $value . $closingtag;
 }
@@ -139,7 +126,8 @@ function special_menu_items_preprocess_page(&$vars, $hook) {
           case '<nolink>':
             $tag = variable_get('special_menu_items_nolink_tag', '<span>');
             $title = $vars[$menu][$key]['title'];
-            $vars[$menu][$key]['title'] = special_menu_items_render_menu_item($tag, $title);
+            $attrs = $vars[$menu][$key]['attributes'] ?: array();
+            $vars[$menu][$key]['title'] = special_menu_items_render_menu_item($tag, $title, $attrs);
             $vars[$menu][$key]['attributes']['class'][] = 'nolink';
             break;
 
