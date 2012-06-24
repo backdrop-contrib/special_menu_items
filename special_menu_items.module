@@ -53,7 +53,7 @@ function special_menu_items_link(array $variables) {
     return special_menu_items_render_menu_item($tag, $value, $variables['options']['attributes']);
   }
   // Call the original theme function for normal menu link.
-  return theme('link_default',$variables);
+  return theme('special_menu_items_link_default',$variables);
 }
 
 /**
@@ -95,7 +95,7 @@ function special_menu_items_menu_link(array $variables) {
     return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
   }
   // Call the original theme function for normal menu link.
-  return theme('menu_link_default',$variables);
+  return theme('special_menu_items_menu_link_default',$variables);
 }
 
 
@@ -154,10 +154,10 @@ function special_menu_items_preprocess_page(&$vars, $hook) {
  */
 function special_menu_items_theme_registry_alter(&$registry) {
   // Save previous value from registry in case another theme overwrites menu_item_link
-  $registry['menu_link_default'] = $registry['menu_link'];
+  $registry['special_menu_items_menu_link_default'] = $registry['menu_link'];
   $registry['menu_link']['function'] = 'special_menu_items_menu_link';
   
-  $registry['link_default'] = $registry['link'];
+  $registry['special_menu_items_link_default'] = $registry['link'];
   $registry['link']['function'] = 'special_menu_items_link';
 }
 
