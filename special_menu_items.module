@@ -156,7 +156,7 @@ function special_menu_items_theme_registry_alter(&$registry) {
   // Save previous value from registry in case another theme overwrites menu_item_link
   $registry['special_menu_items_menu_link_default'] = $registry['menu_link'];
   $registry['menu_link']['function'] = 'special_menu_items_menu_link';
-  
+
   $registry['special_menu_items_link_default'] = $registry['link'];
   $registry['link']['function'] = 'special_menu_items_link';
 }

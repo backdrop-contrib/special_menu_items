@@ -14,7 +14,7 @@ function special_menu_items_uninstall() {
  * "nolink" to <nolink> and "separator" to <separator>
  */
 function special_menu_items_update_7000(&$sandbox){
-  
+
   //change "nolink" to <nolink>
   db_update('menu_links')
     ->fields(array(
@@ -23,7 +23,7 @@ function special_menu_items_update_7000(&$sandbox){
     ))
     ->condition('router_path', 'nolink', '=')
     ->execute();
-  
+
   //change "separator" to <separator>
   db_update('menu_links')
   ->fields(array(
@@ -32,7 +32,7 @@ function special_menu_items_update_7000(&$sandbox){
   ))
   ->condition('router_path', 'separator', '=')
   ->execute();
-  
+
   //we don't need this variable anymore
   variable_del('special_menu_items_menu_item_link');
 }
