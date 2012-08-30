@@ -43,59 +43,34 @@ function special_menu_items_menu() {
 /**
  * Override of theme_link()
  * This function will render link if it is "nolink" or "separator". Otherwise it will call originally
- * overwriten menu_item_link function.
+ * overwritten menu_item_link function.
  */
-
 function special_menu_items_link(array $variables) {
   if (in_array($variables['path'], array('<nolink>', '<separator>'))) {
-    $tag = variable_get('special_menu_items_nolink_tag', '<span>');
-    $value = $variables['options']['html'] ? $variables['text'] : check_plain($variables['text']);
-    return special_menu_items_render_menu_item($tag, $value, $variables['options']['attributes']);
-  }
-  // Call the original theme function for normal menu link.
-  return theme('special_menu_items_link_default',$variables);
-}
-
-/**
- * Override of theme_menu_item_link()
- * This function will render link if it is "nolink" or "separator". Otherwise it will call originally
- * overwriten menu_item_link function.
- */
-
-function special_menu_items_menu_link(array $variables) {
-  // Find special menu link
-  if (in_array($variables['element']['#href'], array('<nolink>', '<separator>'))) {
-    $element = $variables['element'];
-    $sub_menu = '';
-
-    if ($element['#below']) {
-      $sub_menu = drupal_render($element['#below']);
-    }
-
-    switch ($element['#href']) {
+    switch ($variables['path']) {
       case '<nolink>':
         $tag = variable_get('special_menu_items_nolink_tag', '<span>');
-        $title = strip_tags(l($element['#title'], $element['#href'], $element['#localized_options']));
-        $attrs = isset($element['#original_link']['options']['attributes']) ? $element['#original_link']['options']['attributes'] : array();
-        // Set a class if the link is in the active trail.
-        if (!empty($element['#original_link']['in_active_trail'])) {
-          $attrs['class'][] = 'active-trail';
-        }
-        $output = special_menu_items_render_menu_item($tag, $title, $attrs);
-        $element['#attributes']['class'][] = 'nolink';
+        $title = $variables['options']['html'] ? $variables['text'] : check_plain($variables['text']);
         break;
 
       case '<separator>':
-        $output = variable_get('special_menu_items_separator_value', '<hr>');
-        $element['#attributes']['class'][] = 'separator';
-
+        $tag = variable_get('special_menu_items_separator_tag', '<span>');
+        $title = variable_get('special_menu_items_separator_value', '<hr>');
         break;
     }
 
-    return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+    $attributes = drupal_attributes($variables['options']['attributes']);
+    if ($tag != '<a>') {
+      // <a> tags can have these but a <span> cannot, so we remove them.
+      foreach (array('accesskey', 'target', 'rel', 'name') as $attribute) {
+        $attributes = preg_replace("/ $attribute=\".*\"/i", "", $attributes);
+      }
+    }
+
+    return special_menu_items_render_menu_item($tag, $title, $attributes);
   }
   // Call the original theme function for normal menu link.
-  return theme('special_menu_items_menu_link_default',$variables);
+  return theme('special_menu_items_link_default', $variables);
 }
 
 
@@ -103,12 +78,16 @@ function special_menu_items_menu_link(array $variables) {
  * Returns menu item rendered.
  */
 function special_menu_items_render_menu_item($tag, $value, $attrs = array()) {
+  // $attrs may be a string already or an array
+  if (is_array($attrs)) {
+    $attrs = drupal_attributes($attrs);
+  }
   $length = strlen($tag);
   if ($tag[0] == '<' && $tag[$length - 1] == '>') {
     $tag = substr($tag, 1, $length-2);
   }
   $closingtag = preg_replace('#^(\w+)#', '</$1>', $tag);
-  $tag = '<' . $tag . drupal_attributes($attrs) . '>';
+  $tag = '<' . $tag . $attrs . '>';
 
   return $tag . $value . $closingtag;
 }
@@ -154,9 +133,6 @@ function special_menu_items_preprocess_page(&$vars, $hook) {
  */
 function special_menu_items_theme_registry_alter(&$registry) {
   // Save previous value from registry in case another theme overwrites menu_item_link
-  $registry['special_menu_items_menu_link_default'] = $registry['menu_link'];
-  $registry['menu_link']['function'] = 'special_menu_items_menu_link';
-
   $registry['special_menu_items_link_default'] = $registry['link'];
   $registry['link']['function'] = 'special_menu_items_link';
 }
@@ -166,17 +142,19 @@ function special_menu_items_theme_registry_alter(&$registry) {
  * Description changed, added nolink and separator as path types.
  */
 function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
-  if ($form['link_path']['#type'] == 'textfield') {
-    $default_value = $form['link_path']['#default_value'];
+ // Some menu items have a pre-defined path which cannot be modified hence no default_value
+ if (isset($form['link_path']['#default_value'])) {
+   $default_value = $form['link_path']['#default_value'];
 
-    if (preg_match('/^<nolink>\/[0-9]+$/', $default_value)) {
-      $default_value = '<nolink>';
-    } elseif (preg_match('/^<separator>\/[0-9]+$/', $default_value)) {
-      $default_value = '<separator>';
-    }
+   if (preg_match('/^<nolink>\/[0-9]+$/', $default_value)) {
+     $default_value = '<nolink>';
+   }
+   elseif (preg_match('/^<separator>\/[0-9]+$/', $default_value)) {
+     $default_value = '<separator>';
+   }
 
-    $form['link_path']['#default_value'] = $default_value;
-    $form['link_path']['#description'] .=  ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
+   $form['link_path']['#default_value'] = $default_value;
+   $form['link_path']['#description'] .=  ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
   }
 }
 
