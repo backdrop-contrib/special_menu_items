@@ -86,7 +86,8 @@ function special_menu_items_render_menu_item($tag, $value, $attrs = array()) {
   if ($tag[0] == '<' && $tag[$length - 1] == '>') {
     $tag = substr($tag, 1, $length-2);
   }
-  $closingtag = preg_replace('^(\w+)', '</$1>', $tag);
+  $closingtag = explode(' ', $tag,2);
+  $closingtag = '</' . $closingtag[0] . '>';
   $tag = '<' . $tag . $attrs . '>';
 
   return $tag . $value . $closingtag;
