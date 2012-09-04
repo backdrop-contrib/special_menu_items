@@ -97,39 +97,7 @@ function special_menu_items_render_menu_item($tag, $value, $attrs = array()) {
 }
 
 
-/**
- * Alter the theme's primary and secondary links.
- *
- */
-function special_menu_items_preprocess_page(&$vars, $hook) {
-  foreach (array('main_menu', 'secondary_menu') as $menu) {
-    foreach (array_keys($vars[$menu]) as $key) {
-      if (in_array($vars[$menu][$key]['href'], array('<nolink>', '<separator>'))) {
-        switch ($vars[$menu][$key]['href']) {
-          case '<nolink>':
-            $tag = variable_get('special_menu_items_nolink_tag', '<span>');
-            $title = $vars[$menu][$key]['title'];
-            $attrs = isset($vars[$menu][$key]['attributes']) ? $vars[$menu][$key]['attributes'] : array();
-            $vars[$menu][$key]['title'] = special_menu_items_render_menu_item($tag, $title, $attrs);
-            $vars[$menu][$key]['attributes']['class'][] = 'nolink';
-            break;
 
-          case '<separator>':
-            $vars[$menu][$key]['title'] = variable_get('special_menu_items_separator_value', '<hr>');
-            $vars[$menu][$key]['attributes']['class'][] = 'separator';
-
-            break;
-        }
-        //render in HTML
-        $vars[$menu][$key]['html'] = TRUE;
-        unset($vars[$menu][$key]['attributes']['title']);
-        unset($vars[$menu][$key]['href']);
-      }
-        //unset($vars[$menu][$key]['attributes']['title']);
-
-    }
-  }
-}
 
 /**
  * Implementation of hook_theme_registry_alter()
