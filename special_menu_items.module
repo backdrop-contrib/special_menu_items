@@ -144,24 +144,6 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
 }
 
 /**
- * Implementation of hook_init().
- */
-function special_menu_items_init() {
-  // Make breadcrumb of nolink menu item nonlinkable.
-  $breadcrumb = drupal_get_breadcrumb();
-
-  foreach($breadcrumb as $key => $crumb){
-    if (strlen(strstr($crumb,'<nolink>')) > 0) {
-      $crumb = strip_tags($crumb);
-      $tag = variable_get('special_menu_items_nolink_tag', '<span>');
-      $breadcrumb[$key] = special_menu_items_render_menu_item($tag, $crumb);
-    }
-  }
-
-  drupal_set_breadcrumb($breadcrumb);
-}
-
-/**
  * Special Menu Items admin settings form.
  *
  * @return
