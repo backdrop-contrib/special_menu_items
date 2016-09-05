@@ -1,4 +1,4 @@
-name = Special menu items
+name = Special Menu Items
 description = "Allow users to add placeholder and/or separator menu items."
 backdrop = 1.x
 dependencies[] = menu
