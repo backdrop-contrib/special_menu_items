@@ -4,3 +4,4 @@ backdrop = 1.x
 dependencies[] = menu
 package = "Menu"
 configure = admin/config/system/special_menu_items
+type = module
