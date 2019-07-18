@@ -90,7 +90,9 @@ function special_menu_items_link(array $variables) {
     return special_menu_items_render_menu_item($tag, $title, $attributes);
   }
   // Call the original theme function for normal menu link.
-  return theme('special_menu_items_link_default', $variables);
+  $theme_registry = theme_get_registry();
+  $function = $theme_registry['special_menu_items_link_default']['function'];
+  return $function($variables);
 }
 
 /**
