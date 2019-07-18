@@ -47,6 +47,17 @@ Upgrading
 Just overwrite (or replace) the older special_menu_items folder with the newer
 version.
 
+Performance Implications
+------------------------
+Special Menu Items implements THEME_link() to change the rendering of links. For link heavy pages, this may 
+result in reduced performance. The THEME_link() function can be disabled with a variable in settings.php, but 
+you will then need to implement the markup changes yourself.
+
+See the notes on the l() function and theme_link() explanation on api.drupal.org.
+
+https://api.drupal.org/api/drupal/includes!common.inc/function/l/7
+https://api.drupal.org/api/drupal/includes!theme.inc/function/theme_link/7
+
 Contact
 -------
 This module is developed by Servit Open Source Solutions - http://servit.ch
