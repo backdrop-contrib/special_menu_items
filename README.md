@@ -50,13 +50,12 @@ for complete text.
 CURRENT MAINTAINERS
 ---------------    
 
-Looking for maintainers
+ - [Laryn Kragt Bakker](https://github.com/laryn) - [CEDC.org](https://cedc.org)
 
 CREDITS   
 --------------- 
 
-This module is a fork of the Drupal version developed by [Servit Open Source 
+ - Ported to Backdrop CMS by [docwilmot](https://github.com/docwilmot)
+ - This module is a fork of the Drupal version developed by [Servit Open Source 
 Solutions](http://servit.ch) and maintained by [Khaled Zaidan](mailto:zaidan@servit.ch)
-
-Written by Tamir Al Zoubi and Karim Djelid - Servit Open Source Solutions 
-- www.servit.ch
+ - Written by Tamir Al Zoubi and Karim Djelid - [Servit Open Source Solutions](http://www.servit.ch)
