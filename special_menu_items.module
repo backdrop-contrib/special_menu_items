@@ -145,6 +145,27 @@ function special_menu_items_theme_registry_alter(&$registry) {
 function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
   // Some menu items have a pre-defined path which cannot be modified hence no
   // default_value.
+  $options = array(
+    'path' => t('Path'),
+    'nolink' => t('Text with no link'), 
+    'separator' => t('Separator'),
+  );
+  $form['menu_item_type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Menu item type'),
+    '#options' => $options,
+    '#default_value' => 'path',
+    '#weight' => -25,
+  );
+  $form['link_title']['#title'] = t('Menu item title');
+  $form['link_title']['#states'] = array(
+    'visible' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'path'),
+        array('value' => 'nolink'),
+      ),
+    ),
+  );
   if (isset($form['link_path']['#default_value'])) {
     $default_value = $form['link_path']['#default_value'];
 
