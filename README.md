@@ -1,61 +1,61 @@
-Special Menu Items Module
-=========================
+# Special Menu Items
 
-Description
------------
-Special Menu Items is a module that enables "placeholder" and "separator" menu
-items. A placeholder is a menu item which is actually not a link. Something like 
+This module enables "placeholder" and "separator" menu items. 
+
+A **placeholder** is a menu item which is actually not a link. Something like 
 this is useful with drop down menus where the goal is to have a parent link
 which is actually not linking to a page, but which is just acting as a parent,
-grouping some children below it. A separator menu item is something like
-"------" which is also not linking anywhere but merely a way to structure menus.
+grouping some children below it. 
 
-This module depends on the core Menu module. It is meant to be used with
-drop-down menus (introduced in core after Backdrop 1.5.0), or you will not be
-able to acess children of nolink menu items.
+A **separator** menu item is something like "------" which is also not linked
+to anything but is merely a way to structure menus.
 
-Features
---------
-  - User can create a new menu item and place either `<nolink>` or `<separator>`
-    in the Path field (without quotes).
-  - When the menu is rendered any `<nolink>` item will be rendered similar to a 
-    normal menu link item, but there will be no link, just the title. Since
-    version 1.3 you can change the HTML tag used for the menu item.
-  - When the menu is rendered any `<separator>` item will be rendered as an item 
-    which has no link, and the default title will be "-------". Since version
-    1.3 it is possible to change both the HTML tag and the title.
-  - Breadcrumb of `<nolink>` will be rendered same as `<nolink>` menu item.
-  - A "nolink" CSS class is added to `<nolink>` menu items.
-  - A "seperator" CSS class is added to `<seperator>` menu items.
+This module depends on the core Menu module.
 
-Installation
-------------
-1. Copy the special_menu_items folder to your /modules directory.
-2. Go to Administration -> Functionality -> Modules (admin/modules) and enable
-   the module.
-3. Configure the module settings at Administration -> System -> Special Menu
-   Items (admin/config/system/special_menu_items).
+## Configuration and Usage
 
-Upgrading
----------
-Just overwrite (or replace) the older special_menu_items folder with the newer 
-version.
+  - Configure settings at **Administration > System > Special Menu Items** 
+    (`admin/config/system/special_menu_items`).
 
-LICENSE
----------------    
+  - A user can create a new menu item and place either `<nolink>` or 
+    `<separator>` in the Path field.
+  - When the menu is rendered any `<nolink>` item will show similarly to a 
+    normal menu link item, but there will be no link added to the title. You
+    can change the HTML tag used for the menu item in the module configuration.
+  - When the menu is rendered any `<separator>` item will show as an item 
+    which has no link, and the default title will be "-------". You
+    can change the HTML tag and title used for the menu item in the module
+    configuration.
+  - A breadcrumb of `<nolink>` will be rendered the same as a `<nolink>` menu
+    item.
+  - A `nolink` CSS class is added to `<nolink>` menu items.
+  - A `separator` CSS class is added to `<separator>` menu items.
+  
+  - View and edit more instructions in the 
+    [Wiki](https://github.com/backdrop-contrib/special_menu_items/wiki).
 
-This project is GPL v2 software. See the LICENSE.txt file in this directory 
-for complete text.
+## Installation
 
-CURRENT MAINTAINERS
----------------    
+ - Install this module and its dependencies using the official 
+  [Backdrop CMS instructions](https://backdropcms.org/guide/modules)
+
+## Issues
+
+Bugs and Feature requests should be reported in the 
+[Issue Queue](https://github.com/backdrop-contrib/special_menu_items/issues)
+
+## Current Maintainers
 
  - [Laryn Kragt Bakker](https://github.com/laryn) - [CEDC.org](https://cedc.org)
 
-CREDITS   
---------------- 
+## Credits
 
  - Ported to Backdrop CMS by [docwilmot](https://github.com/docwilmot)
- - This module is a fork of the Drupal version developed by [Servit Open Source 
-Solutions](http://servit.ch) and maintained by [Khaled Zaidan](mailto:zaidan@servit.ch)
- - Written by Tamir Al Zoubi and Karim Djelid - [Servit Open Source Solutions](http://www.servit.ch)
+ - Originally developed for Drupal 7 by Tamir Al Zoubi and Karim Djelid 
+   ([Servit Open Source Solutions](http://servit.ch)) and maintained by 
+   [Simon Perdrisat (gagarine)](https://www.drupal.org/u/gagarine).
+
+## License
+
+This project is GPL v2 software. See the LICENSE.txt file in this directory for
+complete text.
