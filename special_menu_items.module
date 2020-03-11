@@ -158,6 +158,7 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
     '#weight' => -25,
   );
   $form['link_title']['#title'] = t('Menu item title');
+  $form['link_title']['#required'] = FALSE;
   $form['link_title']['#states'] = array(
     'visible' => array(
       ':input[name=menu_item_type]' => array(
@@ -165,12 +166,14 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
         array('value' => 'nolink'),
       ),
     ),
-    'optional' => array(
+    'required' => array(
       ':input[name=menu_item_type]' => array(
-        array('value' => 'separator'),
+        array('value' => 'path'),
+        array('value' => 'nolink'),
       ),
     ),
   );
+  $form['link_path']['#required'] = FALSE;
   $form['link_path']['#states'] = array(
     'invisible' => array(
       ':input[name=menu_item_type]' => array(
@@ -178,10 +181,9 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
         array('value' => 'nolink'),
       ),
     ),
-    'optional' => array(
+    'required' => array(
       ':input[name=menu_item_type]' => array(
-        array('value' => 'separator'),
-        array('value' => 'nolink'),
+        array('value' => 'path'),
       ),
     ),
   );
