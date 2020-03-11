@@ -150,11 +150,22 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
     'nolink' => t('Text with no link'), 
     'separator' => t('Separator'),
   );
+  switch ($form['link_path']['#default_value']) {
+    case '<nolink>':
+      $type = 'nolink';
+      break;
+    case '<separator>':
+      $type = 'separator';
+      break;
+    default:
+      $type = 'path';
+      break;
+  }
   $form['menu_item_type'] = array(
     '#type' => 'radios',
     '#title' => t('Menu item type'),
     '#options' => $options,
-    '#default_value' => 'path',
+    '#default_value' => $type,
     '#weight' => -25,
   );
   $form['link_title']['#title'] = t('Menu item title');
@@ -201,7 +212,6 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
     $form['link_path']['#description'] .= ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
   }
   array_unshift($form['#validate'], 'special_menu_items_form_menu_edit_item_validate');
-  dpm($form);
 }
 
 /**
@@ -209,7 +219,6 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
  * Adjust entries here.
  */
 function special_menu_items_form_menu_edit_item_validate(&$form, &$form_state) {
-  dpm($form_state);
   switch ($form_state['values']['menu_item_type']) {
     case 'nolink':
       form_set_value($form['link_path'], '<nolink>', $form_state);
@@ -218,8 +227,15 @@ function special_menu_items_form_menu_edit_item_validate(&$form, &$form_state) {
       form_set_value($form['link_path'], '<separator>', $form_state);
       form_set_value($form['link_title'], '----------', $form_state);
       break;
+    default:
+      break;
   }
-  dpm($form_state);
+  if (empty($form_state['values']['link_path'])) {
+    form_set_error('link_path', t('Path is required.'));
+  }
+  if (empty($form_state['values']['link_title'])) {
+    form_set_error('link_path', t('Title is required.'));
+  }
 }
 
 /**
