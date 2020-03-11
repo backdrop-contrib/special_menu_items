@@ -138,7 +138,7 @@ function special_menu_items_theme_registry_alter(&$registry) {
 }
 
 /**
- * Implements hook_form_FROM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Description changed, added nolink and separator as path types.
  */
@@ -165,6 +165,25 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
         array('value' => 'nolink'),
       ),
     ),
+    'optional' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'separator'),
+      ),
+    ),
+  );
+  $form['link_path']['#states'] = array(
+    'invisible' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'separator'),
+        array('value' => 'nolink'),
+      ),
+    ),
+    'optional' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'separator'),
+        array('value' => 'nolink'),
+      ),
+    ),
   );
   if (isset($form['link_path']['#default_value'])) {
     $default_value = $form['link_path']['#default_value'];
@@ -179,9 +198,27 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
     $form['link_path']['#default_value'] = $default_value;
     $form['link_path']['#description'] .= ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
   }
+  array_unshift($form['#validate'], 'special_menu_items_form_menu_edit_item_validate');
+  dpm($form);
 }
 
-
+/**
+ *
+ * Adjust entries here.
+ */
+function special_menu_items_form_menu_edit_item_validate(&$form, &$form_state) {
+  dpm($form_state);
+  switch ($form_state['values']['menu_item_type']) {
+    case 'nolink':
+      form_set_value($form['link_path'], '<nolink>', $form_state);
+      break;
+    case 'separator':
+      form_set_value($form['link_path'], '<separator>', $form_state);
+      form_set_value($form['link_title'], '----------', $form_state);
+      break;
+  }
+  dpm($form_state);
+}
 
 /**
  * Special Menu Items admin settings form.
