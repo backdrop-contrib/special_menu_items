@@ -1,6 +1,5 @@
 <?php
 
-
 function special_menu_items_update_last_removed() {
   return 7000;
 }

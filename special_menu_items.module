@@ -24,17 +24,17 @@ function special_menu_items_config_info() {
 }
 
 /**
- * Implementation of hook_menu()
+ * Implements hook_menu().
  */
 function special_menu_items_menu() {
   $items['<nolink>'] = array(
-    'page callback' => 'backdrop_not_found',
+    'page callback' => 'special_menu_items_page_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
 
   $items['<separator>'] = array(
-    'page callback' => 'backdrop_not_found',
+    'page callback' => 'special_menu_items_page_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
@@ -48,7 +48,20 @@ function special_menu_items_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
- return $items;
+  return $items;
+}
+
+/**
+ * Page callback for special menu links.
+ *
+ * Simply returns MENU_NOT_FOUND. We can't use backdrop_not_found() as page
+ * callback since this would lead to calling backdrop_deliver_page() twice.
+ *
+ * @return int
+ *   The MENU_NOT_FOUND status code.
+ */
+function special_menu_items_page_callback() {
+  return MENU_NOT_FOUND;
 }
 
 /**
@@ -68,6 +81,7 @@ function special_menu_items_link($variables) {
         $tag = $config->get('nolink_tag');
         $title = $element['#title'];
         $attributes['class'][] = 'nolink';
+        $attributes['tabindex'][] = '0';
         break;
 
       case '<separator>':
@@ -87,9 +101,10 @@ function special_menu_items_link($variables) {
   }
 
   // Call the original theme function for normal menu link.
-  return theme('special_menu_items_link_default', $variables);
+  $theme_registry = theme_get_registry();
+  $function = $theme_registry['special_menu_items_link_default']['function'];
+  return $function($variables);
 }
-
 
 /**
  * Returns menu item rendered.
@@ -101,9 +116,9 @@ function special_menu_items_render_menu_item($tag, $value, $attributes = array()
   }
   $length = strlen($tag);
   if ($tag[0] == '<' && $tag[$length - 1] == '>') {
-    $tag = substr($tag, 1, $length-2);
+    $tag = substr($tag, 1, $length - 2);
   }
-  $closingtag = explode(' ', $tag,2);
+  $closingtag = explode(' ', $tag, 2);
   $closingtag = '</' . $closingtag[0] . '>';
   $tag = '<' . $tag . $attributes . '>';
 
@@ -111,60 +126,51 @@ function special_menu_items_render_menu_item($tag, $value, $attributes = array()
 }
 
 /**
- * Implementation of hook_theme_registry_alter()
+ * Implements hook_theme_registry_alter().
+ *
  * We replace theme_menu_item_link with our own function.
  */
 function special_menu_items_theme_registry_alter(&$registry) {
-  // Save previous value from registry in case another theme overwrites menu_item_link
+  // Save previous value from registry in case another theme overwrites 
+  // menu_item_link.
   $registry['special_menu_items_link_default'] = $registry['menu_link'];
   $registry['menu_link']['function'] = 'special_menu_items_link';
 }
 
 /**
- * Implementation of hook_form_FROM_ID_alter().
+ * Implements hook_form_FROM_ID_alter().
  *
  * Description changed, added nolink and separator as path types.
  */
 function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
- // Some menu items have a pre-defined path which cannot be modified hence no default_value
- if (isset($form['link_path']['#default_value'])) {
-   $default_value = $form['link_path']['#default_value'];
+  // Some menu items have a pre-defined path which cannot be modified hence no
+  // default_value.
+  if (isset($form['link_path']['#default_value'])) {
+    $default_value = $form['link_path']['#default_value'];
 
-   if (preg_match('/^<nolink>\/[0-9]+$/', $default_value)) {
-     $default_value = '<nolink>';
-   }
-   elseif (preg_match('/^<separator>\/[0-9]+$/', $default_value)) {
-     $default_value = '<separator>';
-   }
-
-   $form['link_path']['#default_value'] = $default_value;
-   $form['link_path']['#description'] .=  ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
-  }
-}
-
-/**
- * Implementation of hook_init().
- */
-function special_menu_items_init() {
-  // Make breadcrumb of nolink menu item nonlinkable.
-  $breadcrumb = backdrop_get_breadcrumb();
-
-  foreach($breadcrumb as $key => $crumb){
-    if (strlen(strstr($crumb,'<nolink>')) > 0) {
-      $crumb = strip_tags($crumb);
-      $tag = config_get('special_menu_items.settings', 'nolink_tag');
-      $breadcrumb[$key] = special_menu_items_render_menu_item($tag, $crumb);
+    if (preg_match('/^<nolink>\/[0-9]+$/', $default_value)) {
+      $default_value = '<nolink>';
     }
-  }
+    elseif (preg_match('/^<separator>\/[0-9]+$/', $default_value)) {
+      $default_value = '<separator>';
+    }
 
-  backdrop_set_breadcrumb($breadcrumb);
+    $form['link_path']['#default_value'] = $default_value;
+    $form['link_path']['#description'] .= ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
+  }
 }
 
+
+
 /**
- * Form builder: Special Menu Items admin settings form.
+ * Special Menu Items admin settings form.
+ *
+ * @return array
+ *   The settings form used by Special Menu Items.
  */
 function special_menu_items_admin_settings_form() {
   $config = config('special_menu_items.settings');
+  $form['#config'] = 'special_menu_items.settings';
   $form['nolink_tag'] = array(
     '#type' => 'textfield',
     '#title' => t('HTML tag for "nolink"'),
@@ -186,22 +192,5 @@ function special_menu_items_admin_settings_form() {
     '#default_value' => $config->get('separator_value'),
   );
 
-  $form['submit_button'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-
-  return $form;
-}
-
-/**
- * Submit handler for special_menu_items_admin_settings_form().
- */
-function special_menu_items_admin_settings_form_submit($form, &$form_state) {
-  $config = config('special_menu_items.settings');
-  $config->set('nolink_tag', $form_state['values']['nolink_tag']);
-  $config->set('separator_tag', $form_state['values']['separator_tag']);
-  $config->set('separator_value', $form_state['values']['separator_value']);
-  $config->save();
-  backdrop_set_message(t('Settings saved'), 'status');
+  return system_settings_form($form);
 }
