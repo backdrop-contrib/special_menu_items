@@ -1,6 +1,6 @@
 {
     "_config_name": "special_menu_items.settings",
-    "nolink_tag": "<span>",
+    "nolink_tag": "<a href=\"#\">",
     "separator_tag": "<span>",
     "separator_value": "<hr>"
 }
