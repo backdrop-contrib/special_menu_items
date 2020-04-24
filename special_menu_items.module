@@ -270,3 +270,25 @@ function special_menu_items_admin_settings_form() {
 
   return system_settings_form($form);
 }
+
+/**
+  * Implements hook_form_alter().
+  *
+  * Ensure that <nolink> and <separator> menu items are rendered correctly
+  * on admin form overview pages.
+  *
+  */
+function special_menu_items_form_menu_overview_form_alter(&$form, &$form_state, $menu) {
+  foreach (element_children($form) as $key) {
+    if (substr($key, 0, 5) == 'mlid:') {
+      switch($form[$key]['#item']['link_path']) {
+        case '<nolink>':
+          $form[$key]['title']['#markup'] = $form[$key]['#item']['link_title'];
+          break;
+        case '<separator>':
+          $form[$key]['title']['#markup'] = '<p><hr /></p>';
+          break;
+      }
+    }
+  }
+}
