@@ -156,7 +156,6 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
     }
 
     $form['link_path']['#default_value'] = $default_value;
-    $form['link_path']['#description'] .= ' ' . t('Enter "%nolink" to generate non-linkable item, enter "%separator" to generate separator item.', array('%nolink' => '<nolink>', '%separator' => '<separator>'));
   }
 }
 
