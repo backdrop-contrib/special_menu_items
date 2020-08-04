@@ -138,13 +138,66 @@ function special_menu_items_theme_registry_alter(&$registry) {
 }
 
 /**
- * Implements hook_form_FROM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Description changed, added nolink and separator as path types.
  */
 function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
   // Some menu items have a pre-defined path which cannot be modified hence no
   // default_value.
+  $options = array(
+    'path' => t('Path'),
+    'nolink' => t('Text with no link'), 
+    'separator' => t('Separator'),
+  );
+  switch ($form['link_path']['#default_value']) {
+    case '<nolink>':
+      $type = 'nolink';
+      break;
+    case '<separator>':
+      $type = 'separator';
+      break;
+    default:
+      $type = 'path';
+      break;
+  }
+  $form['menu_item_type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Menu item type'),
+    '#options' => $options,
+    '#default_value' => $type,
+    '#weight' => -25,
+  );
+  $form['link_title']['#title'] = t('Menu item title');
+  $form['link_title']['#required'] = FALSE;
+  $form['link_title']['#states'] = array(
+    'visible' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'path'),
+        array('value' => 'nolink'),
+      ),
+    ),
+    'required' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'path'),
+        array('value' => 'nolink'),
+      ),
+    ),
+  );
+  $form['link_path']['#required'] = FALSE;
+  $form['link_path']['#states'] = array(
+    'invisible' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'separator'),
+        array('value' => 'nolink'),
+      ),
+    ),
+    'required' => array(
+      ':input[name=menu_item_type]' => array(
+        array('value' => 'path'),
+      ),
+    ),
+  );
   if (isset($form['link_path']['#default_value'])) {
     $default_value = $form['link_path']['#default_value'];
 
@@ -157,9 +210,32 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
 
     $form['link_path']['#default_value'] = $default_value;
   }
+  array_unshift($form['#validate'], 'special_menu_items_form_menu_edit_item_validate');
 }
 
-
+/**
+ *
+ * Adjust entries here.
+ */
+function special_menu_items_form_menu_edit_item_validate(&$form, &$form_state) {
+  switch ($form_state['values']['menu_item_type']) {
+    case 'nolink':
+      form_set_value($form['link_path'], '<nolink>', $form_state);
+      break;
+    case 'separator':
+      form_set_value($form['link_path'], '<separator>', $form_state);
+      form_set_value($form['link_title'], '----------', $form_state);
+      break;
+    default:
+      break;
+  }
+  if (empty($form_state['values']['link_path'])) {
+    form_set_error('link_path', t('Path is required.'));
+  }
+  if (empty($form_state['values']['link_title'])) {
+    form_set_error('link_path', t('Title is required.'));
+  }
+}
 
 /**
  * Special Menu Items admin settings form.
@@ -192,4 +268,26 @@ function special_menu_items_admin_settings_form() {
   );
 
   return system_settings_form($form);
+}
+
+/**
+  * Implements hook_form_alter().
+  *
+  * Ensure that <nolink> and <separator> menu items are rendered correctly
+  * on admin form overview pages.
+  *
+  */
+function special_menu_items_form_menu_overview_form_alter(&$form, &$form_state, $menu) {
+  foreach (element_children($form) as $key) {
+    if (substr($key, 0, 5) == 'mlid:') {
+      switch($form[$key]['#item']['link_path']) {
+        case '<nolink>':
+          $form[$key]['title']['#markup'] = $form[$key]['#item']['link_title'];
+          break;
+        case '<separator>':
+          $form[$key]['title']['#markup'] = '<p><hr /></p>';
+          break;
+      }
+    }
+  }
 }
