@@ -9,7 +9,7 @@ function special_menu_items_update_last_removed() {
  */
 function special_menu_items_update_1000(){
   $config = config('special_menu_items.settings');
-  $config->set('nolink_tag', update_variable_get('special_menu_items_nolink_tag', '<span>'));
+  $config->set('nolink_tag', update_variable_get('special_menu_items_nolink_tag', '<a href="#">'));
   $config->set('separator_tag', update_variable_get('special_menu_items_separator_tag', '<span>'));
   $config->set('separator_value', update_variable_get('special_menu_items_separator_value', '<hr>'));
   $config->save();

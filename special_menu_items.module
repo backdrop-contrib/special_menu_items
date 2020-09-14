@@ -249,21 +249,21 @@ function special_menu_items_admin_settings_form() {
   $form['nolink_tag'] = array(
     '#type' => 'textfield',
     '#title' => t('HTML tag for "nolink"'),
-    '#description' => t('By default, Special Menu Items will use a span tag for the nolink menu item. Here you can specify your own tag.'),
+    '#description' => ($config->get('nolink_tag') != '<a href="#">') ? t('Default: <em>&lt;a href="#"&gt;</em>') : '',
     '#default_value' => $config->get('nolink_tag'),
   );
 
   $form['separator_tag'] = array(
     '#type' => 'textfield',
     '#title' => t('HTML tag for "separator"'),
-    '#description' => t('By default, Special Menu Items will use a span tag for the separator menu item. Here you can specify your own tag.'),
+    '#description' => ($config->get('separator_tag') != '<span>') ? t('Default: <em>&lt;span&gt;</em>') : '',
     '#default_value' => $config->get('separator_tag'),
   );
 
   $form['separator_value'] = array(
     '#type' => 'textfield',
     '#title' => t('Value to be displayed for the "separator"'),
-    '#description' => t('By default, Special Menu Items will use a "&lt;hr&gt;" value for the separator. You can specify your own value for the separator.'),
+    '#description' => ($config->get('separator_value') != '<hr>') ? t('Default: <em>&lt;hr&gt;</em>') : '',
     '#default_value' => $config->get('separator_value'),
   );
 
