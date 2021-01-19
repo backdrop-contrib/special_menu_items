@@ -1,0 +1,7 @@
+a.nolink, a.separator {
+  cursor: default;
+}
+
+a.nolink.has-submenu {
+  cursor: context-menu;
+}
