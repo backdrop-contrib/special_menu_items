@@ -1,4 +1,5 @@
-a.nolink, a.separator {
+a.nolink, a.separator, a.nolink:hover, a.separator:hover {
+  text-decoration: none;
   cursor: default;
 }
 
