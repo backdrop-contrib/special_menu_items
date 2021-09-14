@@ -296,10 +296,10 @@ function special_menu_items_form_menu_overview_form_alter(&$form, &$form_state, 
 
 /**
  * Implements hook_breadcrumb_alter().
- * This is used to fix the issue of breadcrumbs pointing at <nolink>
+ * This is used to fix the issue of breadcrumbs pointing at <nolink>.
  * 
  * This function finds crumbs with href pointing at <nolink> and replaces them 
- * with the href of the next crumb
+ * with the href of the next crumb.
  */
 function special_menu_items_menu_breadcrumb_alter(&$active_trail) {
   $previous_href = backdrop_get_path_alias();
