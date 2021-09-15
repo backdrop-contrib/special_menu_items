@@ -307,8 +307,10 @@ function special_menu_items_menu_breadcrumb_alter(&$active_trail) {
   // Loop backwards through the breadcrumbs
   $backward_crumbs = array_reverse($active_trail);
   foreach ($backward_crumbs as $index => $crumb) {
-    if ($crumb['href'] == '<nolink>' || $crumb['href'] == '<separator>' ) {
+    if ($crumb['href'] == '<nolink>') {
       $backward_crumbs[$index]['href'] = $previous_href;
+    } elseif ($crumb['href'] == '<separator>') {
+      unset ($backward_crumbs[$index]);
     } else {
       $previous_href = $crumb['href'];
     }
