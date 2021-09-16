@@ -65,10 +65,12 @@ function special_menu_items_page_callback() {
 }
 
 /**
- * A replacement for theme_link().
+ * A replacement for theme_menu_link().
  *
  * This function will render a link if it is "nolink" or "separator". Otherwise
  * it will call the original menu item link function.
+ * 
+ * @see special_menu_items_theme_registry_alter().
  */
 function special_menu_items_link($variables) {
   $element = $variables['element'];
@@ -290,4 +292,28 @@ function special_menu_items_form_menu_overview_form_alter(&$form, &$form_state, 
       }
     }
   }
+}
+
+/**
+ * Implements hook_breadcrumb_alter().
+ * This is used to fix the issue of breadcrumbs pointing at <nolink> or <separator>.
+ * 
+ * This function finds crumbs with href pointing at <nolink> or <separator> and replaces them 
+ * with the href of the next crumb.
+ */
+function special_menu_items_menu_breadcrumb_alter(&$active_trail) {
+  $previous_href = backdrop_get_path_alias();
+
+  // Loop backwards through the breadcrumbs
+  $backward_crumbs = array_reverse($active_trail);
+  foreach ($backward_crumbs as $index => $crumb) {
+    if ($crumb['href'] == '<nolink>') {
+      $backward_crumbs[$index]['href'] = $previous_href;
+    } elseif ($crumb['href'] == '<separator>') {
+      unset ($backward_crumbs[$index]);
+    } else {
+      $previous_href = $crumb['href'];
+    }
+  }
+  $active_trail = array_reverse($backward_crumbs);
 }
