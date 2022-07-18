@@ -152,6 +152,12 @@ function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
     'nolink' => t('Text with no link'), 
     'separator' => t('Separator'),
   );
+
+  // This item is controlled by code, the path is not editable.
+  if ($form['link_path']['#type'] != 'textfield') {
+    return;
+  }
+
   switch ($form['link_path']['#default_value']) {
     case '<nolink>':
       $type = 'nolink';
