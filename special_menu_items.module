@@ -145,19 +145,16 @@ function special_menu_items_theme_registry_alter(&$registry) {
  * Description changed, added nolink and separator as path types.
  */
 function special_menu_items_form_menu_edit_item_alter(&$form, &$form_state) {
-  // Some menu items have a pre-defined path which cannot be modified hence no
-  // default_value.
-  $options = array(
-    'path' => t('Path'),
-    'nolink' => t('Text with no link'), 
-    'separator' => t('Separator'),
-  );
-
   // This item is controlled by code, the path is not editable.
   if ($form['link_path']['#type'] != 'textfield') {
     return;
   }
 
+  $options = array(
+    'path' => t('Path'),
+    'nolink' => t('Text with no link'),
+    'separator' => t('Separator'),
+  );
   switch ($form['link_path']['#default_value']) {
     case '<nolink>':
       $type = 'nolink';
