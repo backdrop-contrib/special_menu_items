@@ -72,7 +72,7 @@ function special_menu_items_page_callback() {
  * 
  * @see special_menu_items_theme_registry_alter().
  */
-function special_menu_items_link($variables) {
+function special_menu_items_menu_link($variables) {
   $element = $variables['element'];
   if (in_array($element['#href'], array('<nolink>', '<separator>'))) {
     $attributes = array('class' => array());
@@ -104,8 +104,31 @@ function special_menu_items_link($variables) {
 
   // Call the original theme function for normal menu link.
   $theme_registry = theme_get_registry();
-  $function = $theme_registry['special_menu_items_link_default']['function'];
+  $function = $theme_registry['special_menu_items_menu_link_default']['function'];
   return $function($variables);
+}
+
+/**
+ * A replacement for theme_links().
+ *
+ * This function will replace href pointing at "nolink" or "separator" with the current path. 
+ * It is used for Header Block menus containing Special Menu Items in their
+ * first level.
+ * 
+ * @see special_menu_items_theme_registry_alter().
+ */
+function special_menu_items_links($variables) {
+ $current_page = backdrop_get_path_alias();
+ // Replace href  containing <nolink> or <separator> with current page 
+ foreach ($variables['links'] as &$link) {
+   if (in_array($link['href'], array('<nolink>', '<separator>'))) {
+     $link['href'] = $current_page;
+   }
+ }
+ // Call the original theme function for normal menu link.
+ $theme_registry = theme_get_registry();
+ $function = $theme_registry['special_menu_items_links_default']['function'];
+ return $function($variables);
 }
 
 /**
@@ -130,13 +153,17 @@ function special_menu_items_render_menu_item($tag, $value, $attributes = array()
 /**
  * Implements hook_theme_registry_alter().
  *
- * We replace theme_menu_item_link with our own function.
+ * We replace theme_menu_link and theme_links with our own functions.
  */
 function special_menu_items_theme_registry_alter(&$registry) {
   // Save previous value from registry in case another theme overwrites 
   // menu_item_link.
-  $registry['special_menu_items_link_default'] = $registry['menu_link'];
-  $registry['menu_link']['function'] = 'special_menu_items_link';
+  $registry['special_menu_items_menu_link_default'] = $registry['menu_link'];
+  $registry['menu_link']['function'] = 'special_menu_items_menu_link';
+
+  // Save previous value of registry's links function in case a another theme overwrites 
+  $registry['special_menu_items_links_default'] = $registry['links'];
+  $registry['links']['function'] = 'special_menu_items_links';
 }
 
 /**
