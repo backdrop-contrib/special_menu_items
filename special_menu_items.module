@@ -20,12 +20,14 @@
  */
 function special_menu_items_menu() {
   $items['<nolink>'] = array(
+    'title' => '',
     'page callback' => 'special_menu_items_page_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
 
   $items['<separator>'] = array(
+    'title' => '',
     'page callback' => 'special_menu_items_page_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
