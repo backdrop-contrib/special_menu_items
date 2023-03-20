@@ -85,7 +85,7 @@ function special_menu_items_link(array $variables) {
 
     if ($tag != '<a>') {
       // <a> tags can have these but a <span> cannot, so we remove them.
-      foreach (array('accesskey', 'target', 'rel', 'name') as $attribute) {
+      foreach (array('target', 'rel', 'name') as $attribute) {
         $attributes = preg_replace("/ $attribute=\".*\"/i", "", $attributes);
       }
     }
