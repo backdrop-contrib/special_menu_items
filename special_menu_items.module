@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- * Module to enable placeholder or separator menu items. 
+ * Module to enable placeholder or separator menu items.
  *
- * A placeholder is a menu item that is not actually a link. For example, a 
+ * A placeholder is a menu item that is not actually a link. For example, a
  * drop down menu might have a parent item that is used only to group children
- * beneath it. 
+ * beneath it.
  *
  * A separator is a menu item which has a title like "-------" and is also not
  * a link but merely a means to structure other menu items.
@@ -28,12 +28,14 @@ function special_menu_items_config_info() {
  */
 function special_menu_items_menu() {
   $items['<nolink>'] = array(
+    'title' => '',
     'page callback' => 'special_menu_items_page_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
 
   $items['<separator>'] = array(
+    'title' => '',
     'page callback' => 'special_menu_items_page_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
@@ -69,8 +71,8 @@ function special_menu_items_page_callback() {
  *
  * This function will render a link if it is "nolink" or "separator". Otherwise
  * it will call the original menu item link function.
- * 
- * @see special_menu_items_theme_registry_alter().
+ *
+ * @see special_menu_items_theme_registry_alter()
  */
 function special_menu_items_link($variables) {
   $element = $variables['element'];
@@ -83,7 +85,9 @@ function special_menu_items_link($variables) {
         $tag = $config->get('nolink_tag');
         $title = $element['#title'];
         $attributes['class'][] = 'nolink';
-        $attributes['tabindex'][] = '0';
+        if (empty($attributes['tabindex'])) {
+          $attributes['tabindex'] = '0';
+        }
         break;
 
       case '<separator>':
@@ -133,7 +137,7 @@ function special_menu_items_render_menu_item($tag, $value, $attributes = array()
  * We replace theme_menu_item_link with our own function.
  */
 function special_menu_items_theme_registry_alter(&$registry) {
-  // Save previous value from registry in case another theme overwrites 
+  // Save previous value from registry in case another theme overwrites
   // menu_item_link.
   $registry['special_menu_items_link_default'] = $registry['menu_link'];
   $registry['menu_link']['function'] = 'special_menu_items_link';
@@ -285,7 +289,7 @@ function special_menu_items_admin_settings_form() {
 function special_menu_items_form_menu_overview_form_alter(&$form, &$form_state, $menu) {
   foreach (element_children($form) as $key) {
     if (substr($key, 0, 5) == 'mlid:') {
-      switch($form[$key]['#item']['link_path']) {
+      switch ($form[$key]['#item']['link_path']) {
         case '<nolink>':
           $form[$key]['title']['#markup'] = $form[$key]['#item']['link_title'];
           break;
@@ -299,15 +303,15 @@ function special_menu_items_form_menu_overview_form_alter(&$form, &$form_state, 
 
 /**
  * Implements hook_breadcrumb_alter().
- * This is used to fix the issue of breadcrumbs pointing at <nolink> or <separator>.
- * 
- * This function finds crumbs with href pointing at <nolink> or <separator> and replaces them 
- * with the href of the next crumb.
+ * Fixes the issue of breadcrumbs pointing at <nolink> or <separator>.
+ *
+ * This function finds crumbs with href pointing at <nolink> or <separator> and
+ * replaces them with the href of the next crumb.
  */
 function special_menu_items_menu_breadcrumb_alter(&$active_trail) {
   $previous_href = backdrop_get_path_alias();
 
-  // Loop backwards through the breadcrumbs
+  // Loop backwards through the breadcrumbs.
   $backward_crumbs = array_reverse($active_trail);
   foreach ($backward_crumbs as $index => $crumb) {
     if ($crumb['href'] == '<nolink>') {
