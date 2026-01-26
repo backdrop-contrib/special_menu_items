@@ -47,7 +47,8 @@ Bugs and Feature requests should be reported in the
 
 ## Current Maintainers
 
- - [Laryn Kragt Bakker](https://github.com/laryn) - [CEDC.org](https://cedc.org)
+ - [Laryn Kragt Bakker](https://github.com/laryn)
+ - [Alan Mels](https://github.com/alanmels) - [AltaGrade.com](https://www.altagrade.com)
  - Collaboration and co-maintainers welcome!
 
 ## Credits
